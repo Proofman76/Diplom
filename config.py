@@ -1,0 +1,9 @@
+comunity_token = 'vk1.a._v80W7ci1cWMQU-zC1riGpAIsKDVvOfl-WZHOZP3ctzwS0_tpx7KrzAKK5L1YiissMSz3nLrEULOYUXV5hg0RDxwCO_cfyg67IcQ0eKxLwh_koijxTNpgcHpHuHMd227vNrXiH9L6peoCMuuF7TPzXlzs0YTgx4s2EwfWAKD7hPXsaS_CDvZcEdG5yHrXdOdJuEkHPCpKushsmmu7YawkQ'
+acces_token = 'vk1.a.a-6MBOtyZtOmAZCHzje1t6wIJmDUymvLJZsDpakNzXFvMw7ww2ZY-ibS2j6zZAXY1E2kl53Jwg3-D3_L_jT_qt6qm4Rg7-OEEzfwUwbaswr2VtoInrPLValZwEMyno8GruW7vCzxXERnGVLzzPvN4ovrCreL13spBSGEOGvL3KRNRliexDdchM89uq1GS0-x'
+db_url_object = "postgresql+psycopg2://postgres:postgres@localhost/Diplom"
+
+
+"""
+токен
+https://oauth.vk.com/authorize?client_id=51686020&display=page&scope=stats.offline&response_type=token&v=5.131
+"""
