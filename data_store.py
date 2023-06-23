@@ -18,24 +18,26 @@ class Viewed(Base):
 
 
 # добавление записи в бд
+class DataStore:
+    def __init__(self, engine):
+        self.engine = engine
+
+    def add_user(engine, profile_id, worksheet_id):
+        with Session(engine) as session:
+            to_bd = Viewed(profile_id=profile_id, worksheet_id=worksheet_id)
+            session.add(to_bd)
+            session.commit()
 
 
-def add_user(engine, profile_id, worksheet_id):
-    with Session(engine) as session:
-        to_bd = Viewed(profile_id=profile_id, worksheet_id=worksheet_id)
-        session.add(to_bd)
-        session.commit()
+    # извлечение записей из БД
 
-
-# извлечение записей из БД
-
-def check_user(engine, profile_id, worksheet_id):
-    with Session(engine) as session:
-        from_bd = session.query(Viewed).filter(
-            Viewed.profile_id == profile_id,
-            Viewed.worksheet_id == worksheet_id
-        ).first()
-        return True if from_bd else False
+    def check_user(engine, profile_id, worksheet_id):
+        with Session(engine) as session:
+            from_bd = session.query(Viewed).filter(
+                Viewed.profile_id == profile_id,
+                Viewed.worksheet_id == worksheet_id
+            ).first()
+            return True if from_bd else False
 
 
 if __name__ == '__main__':
