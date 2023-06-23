@@ -82,6 +82,8 @@ class VkTools:
                    } for item in photos['items']
                   ]
         '''сортировка п лайкам и комментам'''
+        result.sort(key=lambda x: x['likes'] + x['comments'] * 5, reverse=True)
+
         return result[:3]
 
 
