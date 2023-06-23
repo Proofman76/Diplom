@@ -5,6 +5,9 @@ from vk_api.utils import get_random_id
 
 from config import comunity_token, acces_token
 from core import VkTools
+
+from data_store import DataStore
+from data_store import engine
 # отправка сообщений
 
 
@@ -16,6 +19,7 @@ class BotInterface():
         self.params = {}
         self.worksheets = []
         self.offset = 0
+        self.data_store = DataStore(engine)
 
     def message_send(self, user_id, message, attachment=None):
         self.vk.method('messages.send',
@@ -65,6 +69,9 @@ class BotInterface():
                     )
 
                     'добавить анкету в бд в соотвествие с event.user_id'
+                    if self.data_store.check_user(event.user_id, worksheet["id"]) is False:
+                        self.data_store.add_user(event.user_id, worksheet["id"])
+
 
                 elif event.text.lower() == 'пока':
                     self.message_send(
