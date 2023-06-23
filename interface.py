@@ -64,7 +64,7 @@ class BotInterface():
 
                     self.message_send(
                         event.user_id,
-                        f'имя: {worksheet["name"]} ссылка: vk.com/{worksheet["id"]}',
+                        f'имя: {worksheet["name"]} ссылка: vk.com/id{worksheet["id"]}',
                         attachment=photo_string
                     )
 
