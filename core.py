@@ -86,7 +86,7 @@ class VkTools:
 
 
 if __name__ == '__main__':
-    user_id = 789657038
+    user_id = 161135279
     tools = VkTools(acces_token)
     params = tools.get_profile_info(user_id)
     worksheets = tools.search_worksheet(params, 20)
