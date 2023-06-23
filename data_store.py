@@ -10,6 +10,7 @@ from config import db_url_object
 metadata = MetaData()
 Base = declarative_base()
 
+engine = create_engine(db_url_object)
 
 class Viewed(Base):
     __tablename__ = 'viewed'
@@ -22,8 +23,8 @@ class DataStore:
     def __init__(self, engine):
         self.engine = engine
 
-    def add_user(engine, profile_id, worksheet_id):
-        with Session(engine) as session:
+    def add_user(self, profile_id, worksheet_id):
+        with Session(self.engine) as session:
             to_bd = Viewed(profile_id=profile_id, worksheet_id=worksheet_id)
             session.add(to_bd)
             session.commit()
@@ -31,8 +32,8 @@ class DataStore:
 
     # извлечение записей из БД
 
-    def check_user(engine, profile_id, worksheet_id):
-        with Session(engine) as session:
+    def check_user(self, profile_id, worksheet_id):
+        with Session(self.engine) as session:
             from_bd = session.query(Viewed).filter(
                 Viewed.profile_id == profile_id,
                 Viewed.worksheet_id == worksheet_id
@@ -43,6 +44,6 @@ class DataStore:
 if __name__ == '__main__':
     engine = create_engine(db_url_object)
     Base.metadata.create_all(engine)
-    # add_user(engine, 2113, 124512)
-    res = check_user(engine, 2113, 1245121)
+    # DataStore.add_user(engine, 2113, 124512)
+    res = DataStore.check_user(engine, 2113, 1245121)
     print(res)
