@@ -46,10 +46,12 @@ class BotInterface():
                                     self.params['city'] = ev.text
                                     if self.params['city']:
                                         break
-
+                            if self.params['city']:
+                                self.message_send(event.user_id, 'ОК')
+                                break
 
                     self.message_send(
-                        event.user_id, f'Привет друг, {self.params["name"]}')
+                        event.user_id, f'Привет друг, {self.params["name"]}!')
                 elif event.text.lower() == 'поиск':
                     '''Логика для поиска анкет'''
                     self.message_send(
