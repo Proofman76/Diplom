@@ -36,9 +36,10 @@ class BotInterface():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if event.text.lower() == 'привет':
                     self.params = self.vk_tools.get_profile_info(event.user_id)
-                        '''Логика для получения данных о пользователе'''
-                        if not self.params['city']:
-                            self.message_send(event.user_id, 'Введите город')
+
+                    '''Логика для получения данных о пользователе'''
+                    if not self.params['city']:
+                        self.message_send(event.user_id, 'Введите город')
                         while True:
                             for ev in self.longpoll.listen():
                                 if ev.type == VkEventType.MESSAGE_NEW and ev.to_me:
@@ -50,8 +51,9 @@ class BotInterface():
                                 self.message_send(event.user_id, 'ОК')
                                 break
 
-                    self.message_send(
-                        event.user_id, f'Привет друг, {self.params["name"]}!')
+                    else:
+                        self.message_send(
+                            event.user_id, f'Привет друг, {self.params["name"]}!')
                 elif event.text.lower() == 'поиск':
                     '''Логика для поиска анкет'''
                     self.message_send(
