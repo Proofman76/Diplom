@@ -51,6 +51,32 @@ class BotInterface():
                                 self.message_send(event.user_id, 'ОК')
                                 break
 
+                    elif not self.params['sex']:
+                        self.message_send(event.user_id, 'Введите пол (муж это 2, жен это 1)')
+                        while True:
+                            for ev in self.longpoll.listen():
+                                if ev.type == VkEventType.MESSAGE_NEW and ev.to_me:
+                                    self.params = self.vk_tools.get_profile_info(event.user_id)
+                                    self.params['sex'] = ev.text
+                                    if self.params['sex']:
+                                        break
+                            if self.params['sex']:
+                                self.message_send(event.user_id, 'ОК')
+                                break
+
+                    elif not self.params['year']:
+                        self.message_send(event.user_id, 'Введите пол (муж это 2, жен это 1)')
+                        while True:
+                            for ev in self.longpoll.listen():
+                                if ev.type == VkEventType.MESSAGE_NEW and ev.to_me:
+                                    self.params = self.vk_tools.get_profile_info(event.user_id)
+                                    self.params['sex'] = ev.text
+                                    if self.params['sex']:
+                                        break
+                            if self.params['sex']:
+                                self.message_send(event.user_id, 'ОК')
+                                break
+
                     else:
                         self.message_send(
                             event.user_id, f'Привет друг, {self.params["name"]}!')
