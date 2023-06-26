@@ -65,17 +65,20 @@ class BotInterface():
                                 break
 
                     elif not self.params['year']:
-                        self.message_send(event.user_id, 'Введите пол (муж это 2, жен это 1)')
+                        self.message_send(event.user_id, 'Введите год рождения')
                         while True:
                             for ev in self.longpoll.listen():
                                 if ev.type == VkEventType.MESSAGE_NEW and ev.to_me:
                                     self.params = self.vk_tools.get_profile_info(event.user_id)
-                                    self.params['sex'] = ev.text
-                                    if self.params['sex']:
+                                    self.params['year'] = ev.text
+                                    if self.params['year']:
                                         break
-                            if self.params['sex']:
+                            if self.params['year']:
                                 self.message_send(event.user_id, 'ОК')
                                 break
+
+                    elif not self.params['relation'] or self.params['relation']:
+                        self.params['relation'] = 6
 
                     else:
                         self.message_send(
