@@ -18,7 +18,7 @@ class BotInterface():
         self.vk_tools = VkTools(acces_token)
         self.params = {}
         self.worksheets = []
-        self.offset = 0
+        self.offset = 50
         self.data_store = DataStore(engine)
 
     def message_send(self, user_id, message, attachment=None):
@@ -54,19 +54,22 @@ class BotInterface():
                             self.params, self.offset)
 
                         worksheet = self.worksheets.pop()
-                        'првоерка анкеты в бд в соотвествие с event.user_id'
 
                         photos = self.vk_tools.get_photos(worksheet['id'])
                         photo_string = ''
                         for photo in photos:
                             photo_string += f'photo{photo["owner_id"]}_{photo["id"]},'
-                        self.offset += 10
+                        self.offset += 50
 
                     self.message_send(
                         event.user_id,
                         f'имя: {worksheet["name"]} ссылка: vk.com/id{worksheet["id"]}',
                         attachment=photo_string
                     )
+
+                    'првоерка анкеты в бд в соотвествие с event.user_id'
+                    while self.data_store.check_user(event.user_id, worksheet["id"]) is True:
+                        worksheet = self.worksheets.pop()
 
                     'добавить анкету в бд в соотвествие с event.user_id'
                     if self.data_store.check_user(event.user_id, worksheet["id"]) is False:
