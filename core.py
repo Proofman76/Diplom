@@ -48,8 +48,8 @@ class VkTools:
                                           'hometown': params['city'],
                                           'sex': 1 if params['sex'] == 2 else 2,
                                           'has_photo': True,
-                                          'age_from': params['year'] - 3,
-                                          'age_to': params['year'] + 3,
+                                          'age_from': params['year'] - 10,
+                                          'age_to': params['year'] - 5,
                                       }
                                       )
         except ApiError as e:
