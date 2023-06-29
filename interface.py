@@ -33,60 +33,23 @@ class BotInterface():
 
     def event_handler(self):
         for event in self.longpoll.listen():
+
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 if event.text.lower() == 'привет':
                     self.params = self.vk_tools.get_profile_info(event.user_id)
-
-                    '''Логика для получения данных о пользователе'''
+                    self.params['relation'] = 6  # в активном поиске
+                    self.event_greeting(event.user_id)
                     if not self.params['city']:
-                        self.message_send(event.user_id, 'Введите город')
-                        while True:
-                            for ev in self.longpoll.listen():
-                                if ev.type == VkEventType.MESSAGE_NEW and ev.to_me:
-                                    self.params = self.vk_tools.get_profile_info(event.user_id)
-                                    self.params['city'] = ev.text
-                                    if self.params['city']:
-                                        break
-                            if self.params['city']:
-                                self.message_send(event.user_id, 'ОК')
-                                break
-
+                        self.event_city_input(event.user_id)
                     elif not self.params['sex']:
-                        self.message_send(event.user_id, 'Введите пол (муж это 2, жен это 1)')
-                        while True:
-                            for ev in self.longpoll.listen():
-                                if ev.type == VkEventType.MESSAGE_NEW and ev.to_me:
-                                    self.params = self.vk_tools.get_profile_info(event.user_id)
-                                    self.params['sex'] = ev.text
-                                    if self.params['sex']:
-                                        break
-                            if self.params['sex']:
-                                self.message_send(event.user_id, 'ОК')
-                                break
-
+                        self.event_sex_input(event.user_id)
                     elif not self.params['year']:
-                        self.message_send(event.user_id, 'Введите год рождения')
-                        while True:
-                            for ev in self.longpoll.listen():
-                                if ev.type == VkEventType.MESSAGE_NEW and ev.to_me:
-                                    self.params = self.vk_tools.get_profile_info(event.user_id)
-                                    self.params['year'] = ev.text
-                                    if self.params['year']:
-                                        break
-                            if self.params['year']:
-                                self.message_send(event.user_id, 'ОК')
-                                break
+                        self.event_year_input(event.user_id)
 
-                    elif not self.params['relation'] or self.params['relation']:
-                        self.params['relation'] = 6
-
-                    else:
-                        self.message_send(
-                            event.user_id, f'Привет друг, {self.params["name"]}!')
-                elif event.text.lower() == 'поиск':
+                elif event.text.lower() == 'поиск' or event.text.lower() == 'далее':
                     '''Логика для поиска анкет'''
                     self.message_send(
-                        event.user_id, 'Начинаем поиск')
+                        event.user_id, 'Идет поиск...')
                     if self.worksheets:
                         worksheet = self.worksheets.pop()
                         photos = self.vk_tools.get_photos(worksheet['id'])
@@ -94,31 +57,28 @@ class BotInterface():
                         for photo in photos:
                             photo_string += f'photo{photo["owner_id"]}_{photo["id"]},'
                     else:
-                        self.worksheets = self.vk_tools.search_worksheet(
-                            self.params, self.offset)
-
+                        self.worksheets = self.vk_tools.search_worksheet(self.params, self.offset)
                         worksheet = self.worksheets.pop()
+                        self.offset += 50
+
+                    '''првоерка анкеты в бд в соотвествие с event.user_id'''
+                    while self.data_store.check_user(event.user_id, worksheet["id"]) is True:
+                        worksheet = self.worksheets.pop()
+
+                    '''добавление анкеты в бд в соотвествие с event.user_id'''
+                    if self.data_store.check_user(event.user_id, worksheet["id"]) is False:
+                        self.data_store.add_user(event.user_id, worksheet["id"])
 
                         photos = self.vk_tools.get_photos(worksheet['id'])
                         photo_string = ''
                         for photo in photos:
                             photo_string += f'photo{photo["owner_id"]}_{photo["id"]},'
-                        self.offset += 50
 
-                    self.message_send(
-                        event.user_id,
-                        f'имя: {worksheet["name"]} ссылка: vk.com/id{worksheet["id"]}',
-                        attachment=photo_string
-                    )
-
-                    'првоерка анкеты в бд в соотвествие с event.user_id'
-                    while self.data_store.check_user(event.user_id, worksheet["id"]) is True:
-                        worksheet = self.worksheets.pop()
-
-                    'добавить анкету в бд в соотвествие с event.user_id'
-                    if self.data_store.check_user(event.user_id, worksheet["id"]) is False:
-                        self.data_store.add_user(event.user_id, worksheet["id"])
-
+                        self.message_send(
+                            event.user_id,
+                            f'Имя: {worksheet["name"]}. Страница: vk.com/id{worksheet["id"]}',
+                            attachment=photo_string
+                        )
 
                 elif event.text.lower() == 'пока':
                     self.message_send(
@@ -126,6 +86,36 @@ class BotInterface():
                 else:
                     self.message_send(
                         event.user_id, 'Неизвестная команда')
+
+    def event_greeting(self, user_id):
+        self.message_send(user_id, f'Привет, {self.params["name"]}!')
+
+    def event_city_input(self, user_id):
+        self.message_send(user_id, 'Введите название вашего города проживания:')
+        for event in self.longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                self.params['city'] = event.text
+                break
+        if self.params['city']:
+            self.message_send(user_id, 'ОК')
+
+    def event_sex_input(self, user_id):
+        self.message_send(user_id, 'Введите ваш пол м - мужской, ж - женский:')
+        for event in self.longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                self.params['sex'] = 2 if event.text == 'м' else 1
+                break
+        if self.params['sex']:
+            self.message_send(user_id, 'ОК')
+
+    def event_year_input(self, user_id):
+        self.message_send(user_id, 'Введите ваш возраст:')
+        for event in self.longpoll.listen():
+            if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                self.params['year'] = event.text
+                break
+        if self.params['year']:
+            self.message_send(user_id, 'ОК')
 
 
 if __name__ == '__main__':
